@@ -1,14 +1,35 @@
-# PyMsgBox - A simple, cross-platform, pure Python module for displaying message boxes, and just message boxes.
+# PyMsgBox - A simple, cross-platform, pure Python module for JavaScript-like message boxes.
 # Al Sweigart al@inventwithpython.com
 
 # Modified BSD License
 # Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
 
-import platform
-import os
+"""
+The four functions in PyMsgBox:
+
+ - alert(text='', title='', button='OK')
+
+    Displays a simple message box with text and a single OK button. Returns the text of the button clicked on.
+
+ - confirm(text='', title='', buttons=['OK', 'Cancel'])
+
+    Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on.
+
+ - prompt(text='', title='' , defaultValue='')
+
+    Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked.
+
+ - password(text='', title='', defaultValue='', mask='*')
+
+    Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked.
+"""
+
+__version__ = '1.0.0'
+
 import sys
 
-RUNNING_PYTHON_2 = sys.version.startswith('2.')
+RUNNING_PYTHON_2 = sys.version_info[0] == 2
+
 
 if RUNNING_PYTHON_2:
     from Tkinter import *
@@ -47,22 +68,36 @@ choiceboxChoices = None
 choiceboxWidget = None
 entryWidget = None
 boxRoot = None
-ImageErrorMsg = (
-    "\n\n---------------------------------------------\n"
-    "Error: %s\n%s")
 
 
 
 
-def msgbox(msg="(Your message goes here)", title=" ", ok_button="OK",image=None,root=None):
-    """
-    Display a messagebox
-    """
-    assert type(ok_button) == str, "The 'ok_button' argument to msgbox must be a string."
 
-    return buttonbox(msg=msg, title=title, choices=[ok_button], image=image,root=root)
 
-def denyWindowManagerClose():
+def alert(text='', title='', button='OK', root=None):
+    """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
+    return _buttonbox(msg=text, title=title, choices=[str(button)], root=root)
+
+
+def confirm(text='', title='', buttons=['OK', 'Cancel'], root=None):
+    """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
+    return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root)
+
+
+def prompt(text='', title='' , defaultValue='', root=None):
+    """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
+    return __fillablebox(text, title, default=defaultValue, mask=None,root=root)
+
+
+def password(text='', title='', defaultValue='', mask='*', root=None):
+    """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
+    return __fillablebox(text, title, defaultValue, mask=mask, root=root)
+
+
+
+
+
+def _denyWindowManagerClose():
     """ don't allow WindowManager close
     """
     x = Tk()
@@ -70,11 +105,7 @@ def denyWindowManagerClose():
     x.bell()
     x.destroy()
 
-def buttonbox(msg="",title=" "
-    ,choices=("Ok", "Cancel")
-    , image=None
-    , root=None
-    ):
+def _buttonbox(msg, title, choices, root=None):
     """
     Display a msg, a title, and a set of buttons.
     The buttons are defined by the members of the choices list.
@@ -99,7 +130,7 @@ def buttonbox(msg="",title=" "
         boxRoot = Tk()
         boxRoot.withdraw()
 
-    boxRoot.protocol('WM_DELETE_WINDOW', denyWindowManagerClose )
+    boxRoot.protocol('WM_DELETE_WINDOW', _denyWindowManagerClose )
     boxRoot.title(title)
     boxRoot.iconname('Dialog')
     boxRoot.geometry(rootWindowPosition)
@@ -108,42 +139,6 @@ def buttonbox(msg="",title=" "
     # ------------- define the messageFrame ---------------------------------
     messageFrame = Frame(master=boxRoot)
     messageFrame.pack(side=TOP, fill=BOTH)
-
-    # ------------- define the imageFrame ---------------------------------
-    tk_Image = None
-    if image:
-        imageFilename = os.path.normpath(image)
-        junk,ext = os.path.splitext(imageFilename)
-
-        if os.path.exists(imageFilename):
-            if ext.lower() in [".gif", ".pgm", ".ppm"]:
-                tk_Image = PhotoImage(master=boxRoot, file=imageFilename)
-            else:
-                if PILisLoaded:
-                    try:
-                        pil_Image = PILImage.open(imageFilename)
-                        tk_Image = PILImageTk.PhotoImage(pil_Image, master=boxRoot)
-                    except:
-                        msg += ImageErrorMsg % (imageFilename,
-                            "\nThe Python Imaging Library (PIL) could not convert this file to a displayable image."
-                            "\n\nPIL reports:\n" + exception_format())
-
-                else:  # PIL is not loaded
-                    msg += ImageErrorMsg % (imageFilename,
-                    "\nI could not import the Python Imaging Library (PIL) to display the image.\n\n"
-                    "You may need to install PIL\n"
-                    "(http://www.pythonware.com/products/pil/)\n"
-                    "to display " + ext + " image files.")
-
-        else:
-            msg += ImageErrorMsg % (imageFilename, "\nImage file not found.")
-
-    if tk_Image:
-        imageFrame = Frame(master=boxRoot)
-        imageFrame.pack(side=TOP, fill=BOTH)
-        label = Label(imageFrame,image=tk_Image)
-        label.image = tk_Image # keep a reference!
-        label.pack(side=TOP, expand=YES, fill=X, padx='1m', pady='1m')
 
     # ------------- define the buttonsFrame ---------------------------------
     buttonsFrame = Frame(master=boxRoot)
@@ -168,8 +163,7 @@ def buttonbox(msg="",title=" "
 
 
 def __put_buttons_in_buttonframe(choices):
-    """Put the buttons in the buttons frame
-    """
+    """Put the buttons in the buttons frame"""
     global __widgetTexts, __firstWidget, buttonsFrame
 
     __firstWidget = None
@@ -179,7 +173,7 @@ def __put_buttons_in_buttonframe(choices):
 
     for buttonText in choices:
         tempButton = Button(buttonsFrame, takefocus=1, text=buttonText)
-        bindArrows(tempButton)
+        _bindArrows(tempButton)
         tempButton.pack(expand=YES, side=LEFT, padx='1m', pady='1m', ipadx='2m', ipady='1m')
 
         # remember the text associated with this widget
@@ -197,17 +191,17 @@ def __put_buttons_in_buttonframe(choices):
             commandButton.bind("<%s>" % selectionEvent, handler)
 
 
-def bindArrows(widget):
-    widget.bind("<Down>", tabRight)
-    widget.bind("<Up>"  , tabLeft)
+def _bindArrows(widget):
+    widget.bind("<Down>", _tabRight)
+    widget.bind("<Up>"  , _tabLeft)
 
-    widget.bind("<Right>",tabRight)
-    widget.bind("<Left>" , tabLeft)
+    widget.bind("<Right>",_tabRight)
+    widget.bind("<Left>" , _tabLeft)
 
-def tabRight(event):
+def _tabRight(event):
     boxRoot.event_generate("<Tab>")
 
-def tabLeft(event):
+def _tabLeft(event):
     boxRoot.event_generate("<Shift-Tab>")
 
 
@@ -220,50 +214,12 @@ def __buttonEvent(event):
     boxRoot.quit() # quit the main loop
 
 
-def enterbox(msg="Enter information", title="" , default="", strip=True, image=None, root=None):
-    """
-    Show a box in which a user can enter some text.
-
-    You may optionally specify some default text, which will appear in the
-    enterbox when it is displayed.
-
-    Returns the text that the user entered, or None if he cancels the operation.
-
-    By default, enterbox strips its result (i.e. removes leading and trailing
-    whitespace).  (If you want it not to strip, use keyword argument: strip=False.)
-    This makes it easier to test the results of the call::
-
-        reply = enterbox(....)
-        if reply:
-            ...
-        else:
-            ...
-    """
-    result = __fillablebox(msg, title, default=default, mask=None,image=image,root=root)
-    if result and strip:
-        result = result.strip()
-    return result
-
-
-def passwordbox(msg="Enter information"
-    , title=" "
-    , default=""
-    , image=None
-    , root=None
-    ):
-    """
-    Show a box in which a user can enter a password.
-    The text is masked with asterisks, so the password is not displayed.
-    Returns the text that the user entered, or None if he cancels the operation.
-    """
-    return __fillablebox(msg, title, default, mask="*",image=image,root=root)
 
 
 def __fillablebox(msg
     , title=""
     , default=""
     , mask=None
-    , image=None
     , root=None
     ):
     """
@@ -289,7 +245,7 @@ def __fillablebox(msg
         boxRoot = Tk()
         boxRoot.withdraw()
 
-    boxRoot.protocol('WM_DELETE_WINDOW', denyWindowManagerClose )
+    boxRoot.protocol('WM_DELETE_WINDOW', _denyWindowManagerClose )
     boxRoot.title(title)
     boxRoot.iconname('Dialog')
     boxRoot.geometry(rootWindowPosition)
@@ -298,42 +254,6 @@ def __fillablebox(msg
     # ------------- define the messageFrame ---------------------------------
     messageFrame = Frame(master=boxRoot)
     messageFrame.pack(side=TOP, fill=BOTH)
-
-    # ------------- define the imageFrame ---------------------------------
-    tk_Image = None
-    if image:
-        imageFilename = os.path.normpath(image)
-        junk,ext = os.path.splitext(imageFilename)
-
-        if os.path.exists(imageFilename):
-            if ext.lower() in [".gif", ".pgm", ".ppm"]:
-                tk_Image = PhotoImage(master=boxRoot, file=imageFilename)
-            else:
-                if PILisLoaded:
-                    try:
-                        pil_Image = PILImage.open(imageFilename)
-                        tk_Image = PILImageTk.PhotoImage(pil_Image, master=boxRoot)
-                    except:
-                        msg += ImageErrorMsg % (imageFilename,
-                            "\nThe Python Imaging Library (PIL) could not convert this file to a displayable image."
-                            "\n\nPIL reports:\n" + exception_format())
-
-                else:  # PIL is not loaded
-                    msg += ImageErrorMsg % (imageFilename,
-                    "\nI could not import the Python Imaging Library (PIL) to display the image.\n\n"
-                    "You may need to install PIL\n"
-                    "(http://www.pythonware.com/products/pil/)\n"
-                    "to display " + ext + " image files.")
-
-        else:
-            msg += ImageErrorMsg % (imageFilename, "\nImage file not found.")
-
-    if tk_Image:
-        imageFrame = Frame(master=boxRoot)
-        imageFrame.pack(side=TOP, fill=BOTH)
-        label = Label(imageFrame,image=tk_Image)
-        label.image = tk_Image # keep a reference!
-        label.pack(side=TOP, expand=YES, fill=X, padx='1m', pady='1m')
 
     # ------------- define the buttonsFrame ---------------------------------
     buttonsFrame = Frame(master=boxRoot)
@@ -355,7 +275,7 @@ def __fillablebox(msg
 
     # --------- entryWidget ----------------------------------------------
     entryWidget = Entry(entryFrame, width=40)
-    bindArrows(entryWidget)
+    _bindArrows(entryWidget)
     entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY,TEXT_ENTRY_FONT_SIZE))
     if mask:
         entryWidget.configure(show=mask)
@@ -367,7 +287,7 @@ def __fillablebox(msg
 
     # ------------------ ok button -------------------------------
     okButton = Button(buttonsFrame, takefocus=1, text="OK")
-    bindArrows(okButton)
+    _bindArrows(okButton)
     okButton.pack(expand=1, side=LEFT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
     # for the commandButton, bind activation events to the activation event handler
@@ -379,7 +299,7 @@ def __fillablebox(msg
 
     # ------------------ cancel button -------------------------------
     cancelButton = Button(buttonsFrame, takefocus=1, text="Cancel")
-    bindArrows(cancelButton)
+    _bindArrows(cancelButton)
     cancelButton.pack(expand=1, side=RIGHT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
     # for the commandButton, bind activation events to the activation event handler

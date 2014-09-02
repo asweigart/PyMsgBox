@@ -1,13 +1,28 @@
-PyMsgBox
-========
+.. default-role:: code
+===============
+PyMsgBox Basics
+===============
 
- A simple, cross-platform, pure Python module for JavaScript-like message boxes.
 
-To import, run:
+Installation
+============
 
- - `from pymsgbox import *`
+PyMsgBox can be installed from PyPI with pip:
 
- There are four functions in PyMsgBox, which follow JavaScript's message box naming conventions:
+    `pip install PyMsgBox`
+
+OS X and Linux may require sudo to install the module:
+
+    `sudo pip install PyMsgBox`
+
+PyMsgBox uses Python's built-in TKinter module for its GUI. It is cross-platform and runs on Python 2 and Python 3.
+
+PyMsgBox's code is derived from Stephen Raymond Ferg's EasyGui. http://easygui.sourceforge.net/
+
+Usage
+=====
+
+There are four functions in PyMsgBox, which follow JavaScript's message box naming conventions:
 
  - `alert(text='', title='', button='OK')`
 
@@ -25,6 +40,3 @@ To import, run:
 
     Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked.
 
-Modified BSD License
-
-Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
