@@ -74,7 +74,7 @@ choiceboxChoices = None
 choiceboxWidget = None
 entryWidget = None
 boxRoot = None
-
+buttonsFrame = None
 
 
 
