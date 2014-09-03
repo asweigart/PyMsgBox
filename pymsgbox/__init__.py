@@ -15,16 +15,23 @@ The four functions in PyMsgBox:
 
     Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on.
 
- - prompt(text='', title='' , defaultValue='')
+ - prompt(text='', title='' , default='')
 
     Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked.
 
- - password(text='', title='', defaultValue='', mask='*')
+ - password(text='', title='', default='', mask='*')
 
     Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked.
 """
 
-__version__ = '1.0.0'
+"""
+TODO Roadmap:
+- Be able to specify a custom icon in the message box.
+- Be able to place the message box at an arbitrary position (including on multi screen layouts)
+- Add mouse clicks to unit testing.
+"""
+
+__version__ = '1.0.1'
 
 import sys
 
@@ -32,16 +39,15 @@ RUNNING_PYTHON_2 = sys.version_info[0] == 2
 
 
 if RUNNING_PYTHON_2:
-    from Tkinter import *
+    import Tkinter as tk
 else:
-    from tkinter import *
+    import tkinter as tk
+
 
 rootWindowPosition = "+300+200"
 
-
-if TkVersion < 8.0 :
-    print('You are running Tk version: ' + str(TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
-    sys.exit()
+if tk.TkVersion < 8.0 :
+    raise RuntimeError('You are running Tk version: ' + str(tk.TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
 
 
 PROPORTIONAL_FONT_FAMILY = ("MS", "Sans", "Serif")
@@ -84,14 +90,14 @@ def confirm(text='', title='', buttons=['OK', 'Cancel'], root=None):
     return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root)
 
 
-def prompt(text='', title='' , defaultValue='', root=None):
+def prompt(text='', title='' , default='', root=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
-    return __fillablebox(text, title, default=defaultValue, mask=None,root=root)
+    return __fillablebox(text, title, default=default, mask=None,root=root)
 
 
-def password(text='', title='', defaultValue='', mask='*', root=None):
+def password(text='', title='', default='', mask='*', root=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
-    return __fillablebox(text, title, defaultValue, mask=mask, root=root)
+    return __fillablebox(text, title, default, mask=mask, root=root)
 
 
 
@@ -100,7 +106,7 @@ def password(text='', title='', defaultValue='', mask='*', root=None):
 def _denyWindowManagerClose():
     """ don't allow WindowManager close
     """
-    x = Tk()
+    x = tk.Tk()
     x.withdraw()
     x.bell()
     x.destroy()
@@ -124,10 +130,10 @@ def _buttonbox(msg, title, choices, root=None):
 
     if root:
         root.withdraw()
-        boxRoot = Toplevel(master=root)
+        boxRoot = tk.Toplevel(master=root)
         boxRoot.withdraw()
     else:
-        boxRoot = Tk()
+        boxRoot = tk.Tk()
         boxRoot.withdraw()
 
     boxRoot.protocol('WM_DELETE_WINDOW', _denyWindowManagerClose )
@@ -137,17 +143,17 @@ def _buttonbox(msg, title, choices, root=None):
     boxRoot.minsize(400, 100)
 
     # ------------- define the messageFrame ---------------------------------
-    messageFrame = Frame(master=boxRoot)
-    messageFrame.pack(side=TOP, fill=BOTH)
+    messageFrame = tk.Frame(master=boxRoot)
+    messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
     # ------------- define the buttonsFrame ---------------------------------
-    buttonsFrame = Frame(master=boxRoot)
-    buttonsFrame.pack(side=TOP, fill=BOTH)
+    buttonsFrame = tk.Frame(master=boxRoot)
+    buttonsFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
     # -------------------- place the widgets in the frames -----------------------
-    messageWidget = Message(messageFrame, text=msg, width=400)
-    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY,PROPORTIONAL_FONT_SIZE))
-    messageWidget.pack(side=TOP, expand=YES, fill=X, padx='3m', pady='3m')
+    messageWidget = tk.Message(messageFrame, text=msg, width=400)
+    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
+    messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
 
     __put_buttons_in_buttonframe(choices)
 
@@ -172,9 +178,9 @@ def __put_buttons_in_buttonframe(choices):
     i = 0
 
     for buttonText in choices:
-        tempButton = Button(buttonsFrame, takefocus=1, text=buttonText)
+        tempButton = tk.Button(buttonsFrame, takefocus=1, text=buttonText)
         _bindArrows(tempButton)
-        tempButton.pack(expand=YES, side=LEFT, padx='1m', pady='1m', ipadx='2m', ipady='1m')
+        tempButton.pack(expand=tk.YES, side=tk.LEFT, padx='1m', pady='1m', ipadx='2m', ipady='1m')
 
         # remember the text associated with this widget
         __widgetTexts[tempButton] = buttonText
@@ -216,12 +222,7 @@ def __buttonEvent(event):
 
 
 
-def __fillablebox(msg
-    , title=""
-    , default=""
-    , mask=None
-    , root=None
-    ):
+def __fillablebox(msg, title="", default="", mask=None, root=None):
     """
     Show a box in which a user can enter some text.
     You may optionally specify some default text, which will appear in the
@@ -232,17 +233,19 @@ def __fillablebox(msg
     global boxRoot, __enterboxText, __enterboxDefaultText
     global cancelButton, entryWidget, okButton
 
-    if title == None: title == ""
-    if default == None: default = ""
+    if title == None:
+        title == ''
+    if default == None:
+        default = ''
     __enterboxDefaultText = default
     __enterboxText        = __enterboxDefaultText
 
     if root:
         root.withdraw()
-        boxRoot = Toplevel(master=root)
+        boxRoot = tk.Toplevel(master=root)
         boxRoot.withdraw()
     else:
-        boxRoot = Tk()
+        boxRoot = tk.Tk()
         boxRoot.withdraw()
 
     boxRoot.protocol('WM_DELETE_WINDOW', _denyWindowManagerClose )
@@ -252,43 +255,46 @@ def __fillablebox(msg
     boxRoot.bind("<Escape>", __enterboxCancel)
 
     # ------------- define the messageFrame ---------------------------------
-    messageFrame = Frame(master=boxRoot)
-    messageFrame.pack(side=TOP, fill=BOTH)
+    messageFrame = tk.Frame(master=boxRoot)
+    messageFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
     # ------------- define the buttonsFrame ---------------------------------
-    buttonsFrame = Frame(master=boxRoot)
-    buttonsFrame.pack(side=TOP, fill=BOTH)
+    buttonsFrame = tk.Frame(master=boxRoot)
+    buttonsFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
 
     # ------------- define the entryFrame ---------------------------------
-    entryFrame = Frame(master=boxRoot)
-    entryFrame.pack(side=TOP, fill=BOTH)
+    entryFrame = tk.Frame(master=boxRoot)
+    entryFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
     # ------------- define the buttonsFrame ---------------------------------
-    buttonsFrame = Frame(master=boxRoot)
-    buttonsFrame.pack(side=TOP, fill=BOTH)
+    buttonsFrame = tk.Frame(master=boxRoot)
+    buttonsFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
     #-------------------- the msg widget ----------------------------
-    messageWidget = Message(messageFrame, width="4.5i", text=msg)
-    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY,PROPORTIONAL_FONT_SIZE))
-    messageWidget.pack(side=RIGHT, expand=1, fill=BOTH, padx='3m', pady='3m')
+    messageWidget = tk.Message(messageFrame, width="4.5i", text=msg)
+    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
+    messageWidget.pack(side=tk.RIGHT, expand=1, fill=tk.BOTH, padx='3m', pady='3m')
 
     # --------- entryWidget ----------------------------------------------
-    entryWidget = Entry(entryFrame, width=40)
+    entryWidget = tk.Entry(entryFrame, width=40)
     _bindArrows(entryWidget)
-    entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY,TEXT_ENTRY_FONT_SIZE))
+    entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, TEXT_ENTRY_FONT_SIZE))
     if mask:
         entryWidget.configure(show=mask)
-    entryWidget.pack(side=LEFT, padx="3m")
+    entryWidget.pack(side=tk.LEFT, padx="3m")
     entryWidget.bind("<Return>", __enterboxGetText)
     entryWidget.bind("<Escape>", __enterboxCancel)
-    # put text into the entryWidget
-    entryWidget.insert(0,__enterboxDefaultText)
+
+    # put text into the entryWidget and have it pre-highlighted
+    if __enterboxDefaultText != '':
+        entryWidget.insert(0,__enterboxDefaultText)
+        entryWidget.select_range(0, tk.END)
 
     # ------------------ ok button -------------------------------
-    okButton = Button(buttonsFrame, takefocus=1, text="OK")
+    okButton = tk.Button(buttonsFrame, takefocus=1, text="OK")
     _bindArrows(okButton)
-    okButton.pack(expand=1, side=LEFT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
+    okButton.pack(expand=1, side=tk.LEFT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
     # for the commandButton, bind activation events to the activation event handler
     commandButton  = okButton
@@ -298,9 +304,9 @@ def __fillablebox(msg
 
 
     # ------------------ cancel button -------------------------------
-    cancelButton = Button(buttonsFrame, takefocus=1, text="Cancel")
+    cancelButton = tk.Button(buttonsFrame, takefocus=1, text="Cancel")
     _bindArrows(cancelButton)
-    cancelButton.pack(expand=1, side=RIGHT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
+    cancelButton.pack(expand=1, side=tk.RIGHT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
     # for the commandButton, bind activation events to the activation event handler
     commandButton  = cancelButton
