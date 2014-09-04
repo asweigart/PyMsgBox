@@ -33,7 +33,7 @@ TODO Roadmap:
 - Maybe other types of dialog: open, save, file/folder picker, etc.
 """
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 import sys
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
