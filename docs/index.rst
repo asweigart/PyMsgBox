@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   quickstart.rst
    basics.rst
    native.rst
 
