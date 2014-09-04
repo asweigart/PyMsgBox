@@ -39,7 +39,17 @@ Windows - alert()
 
 The message box will only show a button with text "OK", no matter what is passed for the `button` argument. The `button` argument will be the text that is returned by the function, just like the TkInter `alert()`.
 
+>>> pymsgbox.native.alert('This is an alert.', 'Alert!')
+'OK'
+
+.. image:: http://inventwithpython.com/pymsgbox/win32native_alert_example.png
+
 Windows - confirm()
 -------------------
 
 There will only be buttons "OK" and "Cancel", no matter what is passed for the `buttons` argument. If "OK" is clicked, the first item in the `buttons` list is returned (by default, this is `'OK'`). If "Cancel" is clicked, the second item in the `buttons` list is returned (by default, this is `'Cancel'`), just like the TkInter `confirm()`.
+
+>>> pymsgbox.native.confirm('Nuke the site from orbit?', 'Confirm nuke', ["Yes, I'm sure.", 'Cancel'])
+"Yes, I'm sure."
+
+.. image:: http://inventwithpython.com/pymsgbox/win32native_confirm_example.png
