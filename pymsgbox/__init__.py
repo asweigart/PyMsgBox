@@ -29,25 +29,24 @@ TODO Roadmap:
 - Be able to specify a custom icon in the message box.
 - Be able to place the message box at an arbitrary position (including on multi screen layouts)
 - Add mouse clicks to unit testing.
+- progress() function to display a progress bar
+- Maybe other types of dialog: open, save, file/folder picker, etc.
 """
 
 __version__ = '1.0.1'
 
 import sys
-
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
-
-
 if RUNNING_PYTHON_2:
     import Tkinter as tk
 else:
     import tkinter as tk
 
-
 rootWindowPosition = "+300+200"
 
 if tk.TkVersion < 8.0 :
     raise RuntimeError('You are running Tk version: ' + str(tk.TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
+
 
 
 PROPORTIONAL_FONT_FAMILY = ("MS", "Sans", "Serif")
@@ -57,7 +56,7 @@ PROPORTIONAL_FONT_SIZE  = 10
 MONOSPACE_FONT_SIZE     =  9  #a little smaller, because it it more legible at a smaller size
 TEXT_ENTRY_FONT_SIZE    = 12  # a little larger makes it easier to see
 
-#STANDARD_SELECTION_EVENTS = ["Return", "Button-1"]
+
 STANDARD_SELECTION_EVENTS = ["Return", "Button-1", "space"]
 
 
@@ -100,6 +99,11 @@ def password(text='', title='', default='', mask='*', root=None):
     return __fillablebox(text, title, default, mask=mask, root=root)
 
 
+
+
+
+import pymsgbox.native as native # This needs to be after the above functions so that the unimplmeneted native functions can default back to the above functions.
+native # dummy line just to make lint stop complaining about the previous line
 
 
 
@@ -344,3 +348,6 @@ def __enterboxCancel(event):
 
     __enterboxText = None
     boxRoot.quit()
+
+
+

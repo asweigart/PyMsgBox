@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    basics.rst
+   native.rst
 
 
 Indices and tables

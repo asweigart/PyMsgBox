@@ -5,11 +5,13 @@ import time
 import threading
 import inspect
 
+sys.path.insert(0, os.path.abspath('..'))
+import pymsgbox
+
+# Note: Yes, PyAutoGUI does have PyMsgBox itself as a dependency, but we won't be using that part of PyAutoGUI for this testing.
 import pyautogui # PyAutoGUI simulates key presses on the message boxes.
 pyautogui.PAUSE = 0.1
 
-sys.path.append(os.path.abspath('..'))
-import pymsgbox
 
 GUI_WAIT = 0.2 # if tests start failing, maybe try bumping this up a bit (though that'll slow the tests down)
 
@@ -226,6 +228,116 @@ class DefaultValueOverwriteTests(unittest.TestCase):
         t.start()
         print('Line', inspect.currentframe().f_lineno); self.assertEqual((msgBoxFuncName, msgBoxFunc('Hello', 'Title', 'default')), (msgBoxFuncName, 'abc'))
 """
+
+
+
+class WindowsNativeAlertTests(unittest.TestCase):
+    def test_alert(self):
+        if sys.platform != 'win32':
+            return
+
+        # no text
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert(), 'OK')
+
+        # text
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello'), 'OK')
+
+        # text and title
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello', 'Title'), 'OK')
+
+        # text, title, and custom button
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello', 'Title', 'Button'), 'Button')
+
+        # using keyword arguments
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert(text='Hello', title='Title', button='Button'), 'Button')
+
+
+class WindowsNativeConfirmTests(unittest.TestCase):
+    def test_confirm(self):
+        if sys.platform != 'win32':
+            return
+
+        # press enter on OK
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'OK')
+
+        # press right, enter on Cancel
+        t = KeyPresses(['right', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'Cancel')
+
+        # press right, left, right, enter on Cancel
+        t = KeyPresses(['right', 'left', 'right', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'Cancel')
+
+        # press tab, enter on Cancel
+        t = KeyPresses(['tab', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'Cancel')
+
+        # press tab, tab, enter on OK
+        t = KeyPresses(['tab', 'tab', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'OK')
+
+        # with text
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello'), 'OK')
+
+        # with text, title
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title'), 'OK')
+
+        # with text, title, and one custom button
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['A']), 'A')
+
+        # with text, title, and one custom blank button
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['']), '')
+
+        # with text, title, and two custom buttons
+        t = KeyPresses(['enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['A', 'B']), 'A')
+
+        t = KeyPresses(['right', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['A', 'B']), 'B')
+
+        t = KeyPresses(['right', 'left', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['A', 'B']), 'A')
+
+        t = KeyPresses(['tab', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['A', 'B']), 'B')
+
+        t = KeyPresses(['tab', 'tab', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title', ['A', 'B']), 'A')
+
+        # with text, title, and three custom buttons specified with keyword arguments
+        t = KeyPresses(['tab', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(text='Hello', title='Title', buttons=['A', 'B']), 'B')
+
 
 if __name__ == '__main__':
     unittest.main()
