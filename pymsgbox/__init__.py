@@ -42,22 +42,22 @@ if RUNNING_PYTHON_2:
 else:
     import tkinter as tk
 
-rootWindowPosition = "+300+200"
+rootWindowPosition = '+300+200'
 
 if tk.TkVersion < 8.0 :
     raise RuntimeError('You are running Tk version: ' + str(tk.TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
 
 
 
-PROPORTIONAL_FONT_FAMILY = ("MS", "Sans", "Serif")
-MONOSPACE_FONT_FAMILY    = ("Courier")
+PROPORTIONAL_FONT_FAMILY = ('MS', 'Sans', 'Serif')
+MONOSPACE_FONT_FAMILY    = ('Courier')
 
 PROPORTIONAL_FONT_SIZE  = 10
 MONOSPACE_FONT_SIZE     =  9  #a little smaller, because it it more legible at a smaller size
 TEXT_ENTRY_FONT_SIZE    = 12  # a little larger makes it easier to see
 
 
-STANDARD_SELECTION_EVENTS = ["Return", "Button-1", "space"]
+STANDARD_SELECTION_EVENTS = ['Return', 'Button-1', 'space']
 
 
 # Initialize some global variables that will be reset later
@@ -67,8 +67,8 @@ __replyButtonText = None
 __choiceboxResults = None
 __firstWidget = None
 __enterboxText = None
-__enterboxDefaultText=""
-__multenterboxText = ""
+__enterboxDefaultText=''
+__multenterboxText = ''
 choiceboxChoices = None
 choiceboxWidget = None
 entryWidget = None
@@ -198,21 +198,21 @@ def __put_buttons_in_buttonframe(choices):
         commandButton  = tempButton
         handler = __buttonEvent
         for selectionEvent in STANDARD_SELECTION_EVENTS:
-            commandButton.bind("<%s>" % selectionEvent, handler)
+            commandButton.bind('<%s>' % selectionEvent, handler)
 
 
 def _bindArrows(widget):
-    widget.bind("<Down>", _tabRight)
-    widget.bind("<Up>"  , _tabLeft)
+    widget.bind('<Down>', _tabRight)
+    widget.bind('<Up>'  , _tabLeft)
 
-    widget.bind("<Right>",_tabRight)
-    widget.bind("<Left>" , _tabLeft)
+    widget.bind('<Right>',_tabRight)
+    widget.bind('<Left>' , _tabLeft)
 
 def _tabRight(event):
-    boxRoot.event_generate("<Tab>")
+    boxRoot.event_generate('<Tab>')
 
 def _tabLeft(event):
-    boxRoot.event_generate("<Shift-Tab>")
+    boxRoot.event_generate('<Shift-Tab>')
 
 
 def __buttonEvent(event):
@@ -226,7 +226,7 @@ def __buttonEvent(event):
 
 
 
-def __fillablebox(msg, title="", default="", mask=None, root=None):
+def __fillablebox(msg, title='', default='', mask=None, root=None):
     """
     Show a box in which a user can enter some text.
     You may optionally specify some default text, which will appear in the
@@ -256,7 +256,7 @@ def __fillablebox(msg, title="", default="", mask=None, root=None):
     boxRoot.title(title)
     boxRoot.iconname('Dialog')
     boxRoot.geometry(rootWindowPosition)
-    boxRoot.bind("<Escape>", __enterboxCancel)
+    boxRoot.bind('<Escape>', __enterboxCancel)
 
     # ------------- define the messageFrame ---------------------------------
     messageFrame = tk.Frame(master=boxRoot)
@@ -276,7 +276,7 @@ def __fillablebox(msg, title="", default="", mask=None, root=None):
     buttonsFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
     #-------------------- the msg widget ----------------------------
-    messageWidget = tk.Message(messageFrame, width="4.5i", text=msg)
+    messageWidget = tk.Message(messageFrame, width='4.5i', text=msg)
     messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
     messageWidget.pack(side=tk.RIGHT, expand=1, fill=tk.BOTH, padx='3m', pady='3m')
 
@@ -286,9 +286,9 @@ def __fillablebox(msg, title="", default="", mask=None, root=None):
     entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, TEXT_ENTRY_FONT_SIZE))
     if mask:
         entryWidget.configure(show=mask)
-    entryWidget.pack(side=tk.LEFT, padx="3m")
-    entryWidget.bind("<Return>", __enterboxGetText)
-    entryWidget.bind("<Escape>", __enterboxCancel)
+    entryWidget.pack(side=tk.LEFT, padx='3m')
+    entryWidget.bind('<Return>', __enterboxGetText)
+    entryWidget.bind('<Escape>', __enterboxCancel)
 
     # put text into the entryWidget and have it pre-highlighted
     if __enterboxDefaultText != '':
@@ -296,7 +296,7 @@ def __fillablebox(msg, title="", default="", mask=None, root=None):
         entryWidget.select_range(0, tk.END)
 
     # ------------------ ok button -------------------------------
-    okButton = tk.Button(buttonsFrame, takefocus=1, text="OK")
+    okButton = tk.Button(buttonsFrame, takefocus=1, text='OK')
     _bindArrows(okButton)
     okButton.pack(expand=1, side=tk.LEFT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
@@ -304,11 +304,11 @@ def __fillablebox(msg, title="", default="", mask=None, root=None):
     commandButton  = okButton
     handler = __enterboxGetText
     for selectionEvent in STANDARD_SELECTION_EVENTS:
-        commandButton.bind("<%s>" % selectionEvent, handler)
+        commandButton.bind('<%s>' % selectionEvent, handler)
 
 
     # ------------------ cancel button -------------------------------
-    cancelButton = tk.Button(buttonsFrame, takefocus=1, text="Cancel")
+    cancelButton = tk.Button(buttonsFrame, takefocus=1, text='Cancel')
     _bindArrows(cancelButton)
     cancelButton.pack(expand=1, side=tk.RIGHT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
@@ -316,7 +316,7 @@ def __fillablebox(msg, title="", default="", mask=None, root=None):
     commandButton  = cancelButton
     handler = __enterboxCancel
     for selectionEvent in STANDARD_SELECTION_EVENTS:
-        commandButton.bind("<%s>" % selectionEvent, handler)
+        commandButton.bind('<%s>' % selectionEvent, handler)
 
     # ------------------- time for action! -----------------
     entryWidget.focus_force()    # put the focus on the entryWidget

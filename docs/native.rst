@@ -42,7 +42,7 @@ The message box will only show a button with text "OK", no matter what is passed
 >>> pymsgbox.native.alert('This is an alert.', 'Alert!')
 'OK'
 
-.. image:: http://inventwithpython.com/pymsgbox/win32native_alert_example.png
+.. image:: win32native_alert_example.png
 
 Windows - confirm()
 -------------------
@@ -52,4 +52,4 @@ There will only be buttons "OK" and "Cancel", no matter what is passed for the `
 >>> pymsgbox.native.confirm('Nuke the site from orbit?', 'Confirm nuke', ["Yes, I'm sure.", 'Cancel'])
 "Yes, I'm sure."
 
-.. image:: http://inventwithpython.com/pymsgbox/win32native_confirm_example.png
+.. image:: win32native_confirm_example.png

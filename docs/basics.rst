@@ -44,7 +44,7 @@ There are four functions in PyMsgBox, which follow JavaScript's message box nami
 
     .. image:: confirm_example.png
 
- - `prompt(text='', title='' , defaultValue='')`
+ - `prompt(text='', title='', defaultValue='')`
 
     Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked.
 
