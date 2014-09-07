@@ -33,7 +33,7 @@ TODO Roadmap:
 - Maybe other types of dialog: open, save, file/folder picker, etc.
 """
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 import sys
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
@@ -200,6 +200,9 @@ def __put_buttons_in_buttonframe(choices):
         for selectionEvent in STANDARD_SELECTION_EVENTS:
             commandButton.bind('<%s>' % selectionEvent, handler)
 
+        if 'Cancel' in choices:
+            commandButton.bind('<Escape>', __cancelButtonEvent)
+
 
 def _bindArrows(widget):
     widget.bind('<Down>', _tabRight)
@@ -223,7 +226,11 @@ def __buttonEvent(event):
     __replyButtonText = __widgetTexts[event.widget]
     boxRoot.quit() # quit the main loop
 
-
+def __cancelButtonEvent(event):
+    """Handle pressing Esc by clicking the Cancel button."""
+    global  boxRoot, __widgetTexts, __replyButtonText
+    __replyButtonText = 'Cancel'
+    boxRoot.quit()
 
 
 def __fillablebox(msg, title='', default='', mask=None, root=None):

@@ -156,6 +156,15 @@ class ConfirmTests(unittest.TestCase):
         t.start()
         print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.confirm(text='Hello', title='Title', buttons=['A', 'B', 'C']), 'C')
 
+        # test that pressing Esc is the same as clicking Cancel (but only when there is a cancel button)
+        t = KeyPresses(['escape'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.confirm(text='Escape button press test'), 'Cancel')
+
+        # Make sure that Esc keypress does nothing if there is no Cancel button.
+        t = KeyPresses(['escape', 'enter'])
+        t.start()
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.confirm(text='Escape button press test', buttons=['OK', 'Not OK']), 'OK')
 
 class PromptPasswordTests(unittest.TestCase):
     def test_prompt(self):
