@@ -1,7 +1,11 @@
+
 .. default-role:: code
+
 ==========
 Quickstart
 ==========
+
+On Linux Python 2, you need to first install Tkinter by running: `sudo apt-get install python-tk`
 
 All of the arguments to PyMsgBox functions are optional.
 

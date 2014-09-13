@@ -29,6 +29,8 @@ You can also use your platform's native system calls for displaying a message bo
 
     >>> import pymsgbox.native as pymsgbox
 
+On Linux Python 2, you need to first install Tkinter by running: sudo apt-get install python-tk
+
 Modified BSD License
 
 Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/

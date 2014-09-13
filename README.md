@@ -25,6 +25,8 @@ To import, run:
 
     Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked.
 
+On Linux Python 2, you need to first install Tkinter by running: sudo apt-get install python-tk
+
 Modified BSD License
 
 Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
