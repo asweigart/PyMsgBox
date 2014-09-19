@@ -9,7 +9,7 @@ To import, run:
 
     >>> from pymsgbox import *
 
- There are four functions in PyMsgBox, which follow JavaScript's message box naming conventions:
+There are four functions in PyMsgBox, which follow JavaScript's message box naming conventions:
 
     >>> alert(text='', title='', button='OK')
 
