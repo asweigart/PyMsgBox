@@ -33,7 +33,7 @@ TODO Roadmap:
 - Maybe other types of dialog: open, save, file/folder picker, etc.
 """
 
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 
 import sys
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
@@ -107,14 +107,6 @@ native # dummy line just to make lint stop complaining about the previous line
 
 
 
-def _denyWindowManagerClose():
-    """ don't allow WindowManager close
-    """
-    x = tk.Tk()
-    x.withdraw()
-    x.bell()
-    x.destroy()
-
 def _buttonbox(msg, title, choices, root=None):
     """
     Display a msg, a title, and a set of buttons.
@@ -140,7 +132,6 @@ def _buttonbox(msg, title, choices, root=None):
         boxRoot = tk.Tk()
         boxRoot.withdraw()
 
-    boxRoot.protocol('WM_DELETE_WINDOW', _denyWindowManagerClose )
     boxRoot.title(title)
     boxRoot.iconname('Dialog')
     boxRoot.geometry(rootWindowPosition)
@@ -167,7 +158,11 @@ def _buttonbox(msg, title, choices, root=None):
 
     boxRoot.deiconify()
     boxRoot.mainloop()
-    boxRoot.destroy()
+    try:
+        boxRoot.destroy()
+    except tk.TclError:
+        __replyButtonText = 'Cancel'
+
     if root: root.deiconify()
     return __replyButtonText
 
@@ -204,12 +199,13 @@ def __put_buttons_in_buttonframe(choices):
             commandButton.bind('<Escape>', __cancelButtonEvent)
 
 
-def _bindArrows(widget):
+def _bindArrows(widget, skipArrowKeys=False):
     widget.bind('<Down>', _tabRight)
     widget.bind('<Up>'  , _tabLeft)
 
-    widget.bind('<Right>',_tabRight)
-    widget.bind('<Left>' , _tabLeft)
+    if not skipArrowKeys:
+        widget.bind('<Right>',_tabRight)
+        widget.bind('<Left>' , _tabLeft)
 
 def _tabRight(event):
     boxRoot.event_generate('<Tab>')
@@ -259,7 +255,6 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
         boxRoot = tk.Tk()
         boxRoot.withdraw()
 
-    boxRoot.protocol('WM_DELETE_WINDOW', _denyWindowManagerClose )
     boxRoot.title(title)
     boxRoot.iconname('Dialog')
     boxRoot.geometry(rootWindowPosition)
@@ -289,7 +284,7 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
 
     # --------- entryWidget ----------------------------------------------
     entryWidget = tk.Entry(entryFrame, width=40)
-    _bindArrows(entryWidget)
+    _bindArrows(entryWidget, skipArrowKeys=True)
     entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, TEXT_ENTRY_FONT_SIZE))
     if mask:
         entryWidget.configure(show=mask)
@@ -332,7 +327,11 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
 
     # -------- after the run has completed ----------------------------------
     if root: root.deiconify()
-    boxRoot.destroy()  # button_click didn't destroy boxRoot, so we do it now
+    try:
+        boxRoot.destroy()  # button_click didn't destroy boxRoot, so we do it now
+    except tk.TclError:
+        return None
+
     return __enterboxText
 
 
