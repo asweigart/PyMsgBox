@@ -215,6 +215,14 @@ class PromptPasswordTests(unittest.TestCase):
         t.start()
         print('Line', inspect.currentframe().f_lineno); self.assertEqual((msgBoxFuncName, msgBoxFunc(text='Hello', title='Title', default='default')), (msgBoxFuncName, 'default'))
 
+class TimeoutTests(unittest.TestCase):
+    def test_timeout(self):
+        # Note: If these test's fail, the unit tests will hang.
+        self.assertEqual(pymsgbox.alert('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
+        self.assertEqual(pymsgbox.confirm('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
+        self.assertEqual(pymsgbox.prompt('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
+        self.assertEqual(pymsgbox.password('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
+
 
 """"
 # NOTE: This is weird. This test fails (the additional typed in text gets added
@@ -248,17 +256,17 @@ class WindowsNativeAlertTests(unittest.TestCase):
         # no text
         t = KeyPresses(['enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert(), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert(), pymsgbox.OK_TEXT)
 
         # text
         t = KeyPresses(['enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello'), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello'), pymsgbox.OK_TEXT)
 
         # text and title
         t = KeyPresses(['enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello', 'Title'), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.alert('Hello', 'Title'), pymsgbox.OK_TEXT)
 
         # text, title, and custom button
         t = KeyPresses(['enter'])
@@ -279,37 +287,37 @@ class WindowsNativeConfirmTests(unittest.TestCase):
         # press enter on OK
         t = KeyPresses(['enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), pymsgbox.OK_TEXT)
 
         # press right, enter on Cancel
         t = KeyPresses(['right', 'enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'Cancel')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), pymsgbox.CANCEL_TEXT)
 
         # press right, left, right, enter on Cancel
         t = KeyPresses(['right', 'left', 'right', 'enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'Cancel')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), pymsgbox.CANCEL_TEXT)
 
         # press tab, enter on Cancel
         t = KeyPresses(['tab', 'enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'Cancel')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), pymsgbox.CANCEL_TEXT)
 
         # press tab, tab, enter on OK
         t = KeyPresses(['tab', 'tab', 'enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(), pymsgbox.OK_TEXT)
 
         # with text
         t = KeyPresses(['enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello'), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello'), pymsgbox.OK_TEXT)
 
         # with text, title
         t = KeyPresses(['enter'])
         t.start()
-        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title'), 'OK')
+        print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm('Hello', 'Title'), pymsgbox.OK_TEXT)
 
         # with text, title, and one custom button
         t = KeyPresses(['enter'])

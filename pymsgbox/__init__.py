@@ -59,6 +59,10 @@ TEXT_ENTRY_FONT_SIZE    = 12  # a little larger makes it easier to see
 
 STANDARD_SELECTION_EVENTS = ['Return', 'Button-1', 'space']
 
+# constants for strings: (for internationalization, change these)
+OK_TEXT = 'OK'
+CANCEL_TEXT = 'Cancel'
+TIMEOUT_TEXT = 'Timeout'
 
 # Initialize some global variables that will be reset later
 __choiceboxMultipleSelect = None
@@ -79,24 +83,24 @@ buttonsFrame = None
 
 
 
-def alert(text='', title='', button='OK', root=None):
+def alert(text='', title='', button=OK_TEXT, root=None, timeout=None):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
-    return _buttonbox(msg=text, title=title, choices=[str(button)], root=root)
+    return _buttonbox(msg=text, title=title, choices=[str(button)], root=root, timeout=timeout)
 
 
-def confirm(text='', title='', buttons=['OK', 'Cancel'], root=None):
+def confirm(text='', title='', buttons=[OK_TEXT, CANCEL_TEXT], root=None, timeout=None):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
-    return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root)
+    return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root, timeout=timeout)
 
 
-def prompt(text='', title='' , default='', root=None):
+def prompt(text='', title='' , default='', root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
-    return __fillablebox(text, title, default=default, mask=None,root=root)
+    return __fillablebox(text, title, default=default, mask=None,root=root, timeout=timeout)
 
 
-def password(text='', title='', default='', mask='*', root=None):
+def password(text='', title='', default='', mask='*', root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
-    return __fillablebox(text, title, default, mask=mask, root=root)
+    return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout)
 
 
 
@@ -105,9 +109,14 @@ def password(text='', title='', default='', mask='*', root=None):
 import pymsgbox.native as native # This needs to be after the above functions so that the unimplmeneted native functions can default back to the above functions.
 native # dummy line just to make lint stop complaining about the previous line
 
+def timeoutBoxRoot():
+    global boxRoot, __replyButtonText, __enterboxText
+    boxRoot.destroy()
+    __replyButtonText = TIMEOUT_TEXT
+    __enterboxText = TIMEOUT_TEXT
 
 
-def _buttonbox(msg, title, choices, root=None):
+def _buttonbox(msg, title, choices, root=None, timeout=None):
     """
     Display a msg, a title, and a set of buttons.
     The buttons are defined by the members of the choices list.
@@ -157,11 +166,14 @@ def _buttonbox(msg, title, choices, root=None):
     __firstWidget.focus_force()
 
     boxRoot.deiconify()
+    if timeout is not None:
+        boxRoot.after(timeout, timeoutBoxRoot)
     boxRoot.mainloop()
     try:
         boxRoot.destroy()
     except tk.TclError:
-        __replyButtonText = 'Cancel'
+        if __replyButtonText != TIMEOUT_TEXT:
+            __replyButtonText = None
 
     if root: root.deiconify()
     return __replyButtonText
@@ -195,7 +207,7 @@ def __put_buttons_in_buttonframe(choices):
         for selectionEvent in STANDARD_SELECTION_EVENTS:
             commandButton.bind('<%s>' % selectionEvent, handler)
 
-        if 'Cancel' in choices:
+        if CANCEL_TEXT in choices:
             commandButton.bind('<Escape>', __cancelButtonEvent)
 
 
@@ -225,11 +237,11 @@ def __buttonEvent(event):
 def __cancelButtonEvent(event):
     """Handle pressing Esc by clicking the Cancel button."""
     global  boxRoot, __widgetTexts, __replyButtonText
-    __replyButtonText = 'Cancel'
+    __replyButtonText = CANCEL_TEXT
     boxRoot.quit()
 
 
-def __fillablebox(msg, title='', default='', mask=None, root=None):
+def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None):
     """
     Show a box in which a user can enter some text.
     You may optionally specify some default text, which will appear in the
@@ -298,7 +310,7 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
         entryWidget.select_range(0, tk.END)
 
     # ------------------ ok button -------------------------------
-    okButton = tk.Button(buttonsFrame, takefocus=1, text='OK')
+    okButton = tk.Button(buttonsFrame, takefocus=1, text=OK_TEXT)
     _bindArrows(okButton)
     okButton.pack(expand=1, side=tk.LEFT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
@@ -310,7 +322,7 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
 
 
     # ------------------ cancel button -------------------------------
-    cancelButton = tk.Button(buttonsFrame, takefocus=1, text='Cancel')
+    cancelButton = tk.Button(buttonsFrame, takefocus=1, text=CANCEL_TEXT)
     _bindArrows(cancelButton)
     cancelButton.pack(expand=1, side=tk.RIGHT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
 
@@ -323,6 +335,8 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
     # ------------------- time for action! -----------------
     entryWidget.focus_force()    # put the focus on the entryWidget
     boxRoot.deiconify()
+    if timeout is not None:
+        boxRoot.after(timeout, timeoutBoxRoot)
     boxRoot.mainloop()  # run it!
 
     # -------- after the run has completed ----------------------------------
@@ -330,7 +344,8 @@ def __fillablebox(msg, title='', default='', mask=None, root=None):
     try:
         boxRoot.destroy()  # button_click didn't destroy boxRoot, so we do it now
     except tk.TclError:
-        return None
+        if __enterboxText != TIMEOUT_TEXT:
+            return None
 
     return __enterboxText
 
