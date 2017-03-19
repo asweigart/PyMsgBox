@@ -33,19 +33,30 @@ TODO Roadmap:
 - Maybe other types of dialog: open, save, file/folder picker, etc.
 """
 
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 
 import sys
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
-if RUNNING_PYTHON_2:
-    import Tkinter as tk
-else:
-    import tkinter as tk
 
-rootWindowPosition = '+300+200'
+# Because PyAutoGUI requires PyMsgBox but might be installed on systems
+# without tkinter, we don't want a lack of tkinter to cause installation
+# to fail. So exceptions won't be raised until the PyMsgBox functions
+# are actually called.
+TKINTER_IMPORT_SUCCEEDED = True
 
-if tk.TkVersion < 8.0 :
-    raise RuntimeError('You are running Tk version: ' + str(tk.TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
+try:
+    if RUNNING_PYTHON_2:
+        import Tkinter as tk
+    else:
+        import tkinter as tk
+
+    rootWindowPosition = '+300+200'
+
+    if tk.TkVersion < 8.0 :
+        raise RuntimeError('You are running Tk version: ' + str(tk.TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
+
+except ImportError:
+    TKINTER_IMPORT_SUCCEEDED = False
 
 
 
@@ -85,21 +96,25 @@ buttonsFrame = None
 
 def alert(text='', title='', button=OK_TEXT, root=None, timeout=None):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
+    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return _buttonbox(msg=text, title=title, choices=[str(button)], root=root, timeout=timeout)
 
 
 def confirm(text='', title='', buttons=[OK_TEXT, CANCEL_TEXT], root=None, timeout=None):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
+    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root, timeout=timeout)
 
 
 def prompt(text='', title='' , default='', root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
+    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return __fillablebox(text, title, default=default, mask=None,root=root, timeout=timeout)
 
 
 def password(text='', title='', default='', mask='*', root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
+    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout)
 
 
