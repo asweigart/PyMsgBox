@@ -61,3 +61,16 @@ There are four functions in PyMsgBox, which follow JavaScript's message box nami
     '12345'
 
     .. image:: password_example.png
+
+Timeout
+=======
+
+All four functions have a `timeout` parameter which takes a number of milliseconds. At the end of the timeout, the message box will close and have a return value of `'Timeout'`.
+
+    >>> pymsgbox.confirm('Nuke the site from orbit?', 'Confirm nuke', ["Yes, I'm sure.", 'Cancel'], timeout=2000)  # closes after 2000 milliseconds (2 seconds)
+    "Timeout"
+
+Localization
+============
+
+You can change the default `'OK'`, `'Cancel`', and `'Timeout'` strings by changing `pymsgbox.OK_TEXT`, `pymsgbox.CANCEL_TEXT`, and `pymsgbox.TIMEOUT_TEXT` variables respectively.
