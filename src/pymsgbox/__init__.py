@@ -70,10 +70,18 @@ TEXT_ENTRY_FONT_SIZE    = 12  # a little larger makes it easier to see
 
 STANDARD_SELECTION_EVENTS = ['Return', 'Button-1', 'space']
 
-# constants for strings: (for internationalization, change these)
-OK_TEXT = 'OK'
-CANCEL_TEXT = 'Cancel'
-TIMEOUT_TEXT = 'Timeout'
+# constants for strings: (TODO: for internationalization, change these)
+OK_TEXT        = 'OK'
+CANCEL_TEXT    = 'Cancel'
+YES_TEXT       = 'Yes'
+NO_TEXT        = 'No'
+RETRY_TEXT     = 'Retry'
+ABORT_TEXT     = 'Abort'
+IGNORE_TEXT    = 'Ignore'
+TRY_AGAIN_TEXT = 'Try Again'
+CONTINUE_TEXT  = 'Continue'
+
+TIMEOUT_RETURN_VALUE = 'Timeout'
 
 # Initialize some global variables that will be reset later
 __choiceboxMultipleSelect = None
@@ -94,34 +102,41 @@ buttonsFrame = None
 
 
 
-def alert(text='', title='', button=OK_TEXT, root=None, timeout=None):
+def _alertTkinter(text='', title='', button=OK_TEXT, root=None, timeout=None):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
-    return _buttonbox(msg=text, title=title, choices=[str(button)], root=root, timeout=timeout)
+    retVal = _buttonbox(msg=text, title=title, choices=[str(button)], root=root, timeout=timeout)
+    if retVal is None:
+        return button
+    else:
+        return retVal
+alert = _alertTkinter
 
 
-def confirm(text='', title='', buttons=[OK_TEXT, CANCEL_TEXT], root=None, timeout=None):
+def _confirmTkinter(text='', title='', buttons=(OK_TEXT, CANCEL_TEXT), root=None, timeout=None):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root, timeout=timeout)
+confirm = _confirmTkinter
 
 
-def prompt(text='', title='' , default='', root=None, timeout=None):
+def _promptTkinter(text='', title='' , default='', root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return __fillablebox(text, title, default=default, mask=None,root=root, timeout=timeout)
+prompt = _promptTkinter
 
 
-def password(text='', title='', default='', mask='*', root=None, timeout=None):
+def _passwordTkinter(text='', title='', default='', mask='*', root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
     return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout)
-
+password = _passwordTkinter
 
 
 # Load the native versions of the alert/confirm/prompt/password functions, if available:
 if sys.platform == 'win32':
-    import _native_win
+    from . import _native_win
     NO_ICON  = 0
     STOP     = 0x10
     QUESTION = 0x20
@@ -131,12 +146,11 @@ if sys.platform == 'win32':
     confirm = _native_win.confirm
 
 
-
 def timeoutBoxRoot():
     global boxRoot, __replyButtonText, __enterboxText
     boxRoot.destroy()
-    __replyButtonText = TIMEOUT_TEXT
-    __enterboxText = TIMEOUT_TEXT
+    __replyButtonText = TIMEOUT_RETURN_VALUE
+    __enterboxText = TIMEOUT_RETURN_VALUE
 
 
 def _buttonbox(msg, title, choices, root=None, timeout=None):
@@ -195,7 +209,7 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
     try:
         boxRoot.destroy()
     except tk.TclError:
-        if __replyButtonText != TIMEOUT_TEXT:
+        if __replyButtonText != TIMEOUT_RETURN_VALUE:
             __replyButtonText = None
 
     if root: root.deiconify()
@@ -367,7 +381,7 @@ def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None)
     try:
         boxRoot.destroy()  # button_click didn't destroy boxRoot, so we do it now
     except tk.TclError:
-        if __enterboxText != TIMEOUT_TEXT:
+        if __enterboxText != TIMEOUT_RETURN_VALUE:
             return None
 
     return __enterboxText
