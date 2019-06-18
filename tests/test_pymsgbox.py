@@ -247,7 +247,7 @@ class DefaultValueOverwriteTests(unittest.TestCase):
 """
 
 
-
+"""
 class WindowsNativeAlertTests(unittest.TestCase):
     def test_alert(self):
         if sys.platform != 'win32':
@@ -354,7 +354,7 @@ class WindowsNativeConfirmTests(unittest.TestCase):
         t = KeyPresses(['tab', 'enter'])
         t.start()
         print('Line', inspect.currentframe().f_lineno); self.assertEqual(pymsgbox.native.confirm(text='Hello', title='Title', buttons=['A', 'B']), 'B')
-
+"""
 
 if __name__ == '__main__':
     unittest.main()
