@@ -1,5 +1,7 @@
 # PyMsgBox - A simple, cross-platform, pure Python module for JavaScript-like message boxes.
-# Al Sweigart al@inventwithpython.com
+# By Al Sweigart al@inventwithpython.com
+
+__version__ = '1.0.7'
 
 # Modified BSD License
 # Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
@@ -32,8 +34,6 @@ TODO Roadmap:
 - progress() function to display a progress bar
 - Maybe other types of dialog: open, save, file/folder picker, etc.
 """
-
-__version__ = '1.0.6'
 
 import sys
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
@@ -119,10 +119,18 @@ def password(text='', title='', default='', mask='*', root=None, timeout=None):
 
 
 
+# Load the native versions of the alert/confirm/prompt/password functions, if available:
+if sys.platform == 'win32':
+    import _native_win
+    NO_ICON  = 0
+    STOP     = 0x10
+    QUESTION = 0x20
+    WARNING  = 0x30
+    INFO     = 0x40
+    alert   = _native_win.alert
+    confirm = _native_win.confirm
 
 
-import pymsgbox.native as native # This needs to be after the above functions so that the unimplmeneted native functions can default back to the above functions.
-native # dummy line just to make lint stop complaining about the previous line
 
 def timeoutBoxRoot():
     global boxRoot, __replyButtonText, __enterboxText
