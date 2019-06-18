@@ -218,10 +218,10 @@ class PromptPasswordTests(unittest.TestCase):
 class TimeoutTests(unittest.TestCase):
     def test_timeout(self):
         # Note: If these test's fail, the unit tests will hang.
-        self.assertEqual(pymsgbox.alert('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
-        self.assertEqual(pymsgbox.confirm('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
-        self.assertEqual(pymsgbox.prompt('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
-        self.assertEqual(pymsgbox.password('timeout test', timeout=1000), pymsgbox.TIMEOUT_TEXT)
+        self.assertEqual(pymsgbox.alert('timeout test', timeout=1000), pymsgbox.TIMEOUT_RETURN_VALUE)
+        self.assertEqual(pymsgbox.confirm('timeout test', timeout=1000), pymsgbox.TIMEOUT_RETURN_VALUE)
+        self.assertEqual(pymsgbox.prompt('timeout test', timeout=1000), pymsgbox.TIMEOUT_RETURN_VALUE)
+        self.assertEqual(pymsgbox.password('timeout test', timeout=1000), pymsgbox.TIMEOUT_RETURN_VALUE)
 
 
 """"
