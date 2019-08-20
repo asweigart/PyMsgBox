@@ -46,11 +46,19 @@ IDYES = 0x6
 runningOnPython2 = sys.version_info[0] == 2
 if runningOnPython2:
     messageBoxFunc = ctypes.windll.user32.MessageBoxA
-else: # Python 3 functions.
+else:  # Python 3 functions.
     messageBoxFunc = ctypes.windll.user32.MessageBoxW
 
 
-def alert(text='', title='', button=pymsgbox.OK_TEXT, root=None, timeout=None, icon=NO_ICON, _tkinter=False):
+def alert(
+    text="",
+    title="",
+    button=pymsgbox.OK_TEXT,
+    root=None,
+    timeout=None,
+    icon=NO_ICON,
+    _tkinter=False,
+):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
     if (_tkinter) or (timeout is not None) or (button != pymsgbox.OK_TEXT):
         # Timeouts are not supported by Windows message boxes.
@@ -60,7 +68,16 @@ def alert(text='', title='', button=pymsgbox.OK_TEXT, root=None, timeout=None, i
     messageBoxFunc(0, text, title, MB_OK | MB_SETFOREGROUND | MB_TOPMOST | icon)
     return button
 
-def confirm(text='', title='', buttons=(pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT), root=None, timeout=None, icon=QUESTION, _tkinter=False):
+
+def confirm(
+    text="",
+    title="",
+    buttons=(pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT),
+    root=None,
+    timeout=None,
+    icon=QUESTION,
+    _tkinter=False,
+):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
     buttonFlag = None
     if len(buttons) == 1:
@@ -74,18 +91,32 @@ def confirm(text='', title='', buttons=(pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT),
         elif buttons[0] == pymsgbox.RETRY_TEXT and buttons[1] == pymsgbox.CANCEL_TEXT:
             buttonFlag = MB_RETRYCANCEL
     elif len(buttons) == 3:
-        if buttons[0] == pymsgbox.ABORT_TEXT and buttons[1] == pymsgbox.RETRY_TEXT and buttons[2] == pymsgbox.IGNORE_TEXT:
+        if (
+            buttons[0] == pymsgbox.ABORT_TEXT
+            and buttons[1] == pymsgbox.RETRY_TEXT
+            and buttons[2] == pymsgbox.IGNORE_TEXT
+        ):
             buttonFlag = MB_ABORTRETRYIGNORE
-        elif buttons[0] == pymsgbox.CANCEL_TEXT and buttons[1] == pymsgbox.TRY_AGAIN_TEXT and buttons[2] == pymsgbox.CONTINUE_TEXT:
+        elif (
+            buttons[0] == pymsgbox.CANCEL_TEXT
+            and buttons[1] == pymsgbox.TRY_AGAIN_TEXT
+            and buttons[2] == pymsgbox.CONTINUE_TEXT
+        ):
             buttonFlag = MB_CANCELTRYCONTINUE
-        elif buttons[0] == pymsgbox.YES_TEXT and buttons[1] == pymsgbox.NO_TEXT and buttons[2] == pymsgbox.CANCEL_TEXT:
+        elif (
+            buttons[0] == pymsgbox.YES_TEXT
+            and buttons[1] == pymsgbox.NO_TEXT
+            and buttons[2] == pymsgbox.CANCEL_TEXT
+        ):
             buttonFlag = MB_YESNOCANCEL
 
     if (_tkinter) or (timeout is not None) or (buttonFlag is None):
         # Call the original tkinter confirm() function, not this native one:
         return pymsgbox._confirmTkinter(text, title, buttons, root, timeout)
 
-    retVal = messageBoxFunc(0, text, title, buttonFlag | MB_SETFOREGROUND | MB_TOPMOST | icon)
+    retVal = messageBoxFunc(
+        0, text, title, buttonFlag | MB_SETFOREGROUND | MB_TOPMOST | icon
+    )
     if retVal == IDOK or len(buttons) == 1:
         return pymsgbox.OK_TEXT
     elif retVal == IDCANCEL:
@@ -105,8 +136,7 @@ def confirm(text='', title='', buttons=(pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT),
     elif retVal == IDABORT:
         return pymsgbox.ABORT_TEXT
     else:
-        assert False, 'Unexpected return value from MessageBox: %s' % (retVal)
-
+        assert False, "Unexpected return value from MessageBox: %s" % (retVal)
 
 
 '''

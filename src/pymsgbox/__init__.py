@@ -1,7 +1,7 @@
 # PyMsgBox - A simple, cross-platform, pure Python module for JavaScript-like message boxes.
 # By Al Sweigart al@inventwithpython.com
 
-__version__ = '1.0.7'
+__version__ = "1.0.7"
 
 # Modified BSD License
 # Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
@@ -36,6 +36,7 @@ TODO Roadmap:
 """
 
 import sys
+
 RUNNING_PYTHON_2 = sys.version_info[0] == 2
 
 # Because PyAutoGUI requires PyMsgBox but might be installed on systems
@@ -50,38 +51,43 @@ try:
     else:
         import tkinter as tk
 
-    rootWindowPosition = '+300+200'
+    rootWindowPosition = "+300+200"
 
-    if tk.TkVersion < 8.0 :
-        raise RuntimeError('You are running Tk version: ' + str(tk.TkVersion) + 'You must be using Tk version 8.0 or greater to use PyMsgBox.')
+    if tk.TkVersion < 8.0:
+        raise RuntimeError(
+            "You are running Tk version: "
+            + str(tk.TkVersion)
+            + "You must be using Tk version 8.0 or greater to use PyMsgBox."
+        )
 
 except ImportError:
     TKINTER_IMPORT_SUCCEEDED = False
 
 
+PROPORTIONAL_FONT_FAMILY = ("MS", "Sans", "Serif")
+MONOSPACE_FONT_FAMILY = "Courier"
 
-PROPORTIONAL_FONT_FAMILY = ('MS', 'Sans', 'Serif')
-MONOSPACE_FONT_FAMILY    = ('Courier')
+PROPORTIONAL_FONT_SIZE = 10
+MONOSPACE_FONT_SIZE = (
+    9
+)  # a little smaller, because it it more legible at a smaller size
+TEXT_ENTRY_FONT_SIZE = 12  # a little larger makes it easier to see
 
-PROPORTIONAL_FONT_SIZE  = 10
-MONOSPACE_FONT_SIZE     =  9  #a little smaller, because it it more legible at a smaller size
-TEXT_ENTRY_FONT_SIZE    = 12  # a little larger makes it easier to see
 
-
-STANDARD_SELECTION_EVENTS = ['Return', 'Button-1', 'space']
+STANDARD_SELECTION_EVENTS = ["Return", "Button-1", "space"]
 
 # constants for strings: (TODO: for internationalization, change these)
-OK_TEXT        = 'OK'
-CANCEL_TEXT    = 'Cancel'
-YES_TEXT       = 'Yes'
-NO_TEXT        = 'No'
-RETRY_TEXT     = 'Retry'
-ABORT_TEXT     = 'Abort'
-IGNORE_TEXT    = 'Ignore'
-TRY_AGAIN_TEXT = 'Try Again'
-CONTINUE_TEXT  = 'Continue'
+OK_TEXT = "OK"
+CANCEL_TEXT = "Cancel"
+YES_TEXT = "Yes"
+NO_TEXT = "No"
+RETRY_TEXT = "Retry"
+ABORT_TEXT = "Abort"
+IGNORE_TEXT = "Ignore"
+TRY_AGAIN_TEXT = "Try Again"
+CONTINUE_TEXT = "Continue"
 
-TIMEOUT_RETURN_VALUE = 'Timeout'
+TIMEOUT_RETURN_VALUE = "Timeout"
 
 # Initialize some global variables that will be reset later
 __choiceboxMultipleSelect = None
@@ -90,8 +96,8 @@ __replyButtonText = None
 __choiceboxResults = None
 __firstWidget = None
 __enterboxText = None
-__enterboxDefaultText=''
-__multenterboxText = ''
+__enterboxDefaultText = ""
+__multenterboxText = ""
 choiceboxChoices = None
 choiceboxWidget = None
 entryWidget = None
@@ -99,50 +105,68 @@ boxRoot = None
 buttonsFrame = None
 
 
-
-
-
-def _alertTkinter(text='', title='', button=OK_TEXT, root=None, timeout=None):
+def _alertTkinter(text="", title="", button=OK_TEXT, root=None, timeout=None):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
-    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
-    retVal = _buttonbox(msg=text, title=title, choices=[str(button)], root=root, timeout=timeout)
+    assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    retVal = _buttonbox(
+        msg=text, title=title, choices=[str(button)], root=root, timeout=timeout
+    )
     if retVal is None:
         return button
     else:
         return retVal
+
+
 alert = _alertTkinter
 
 
-def _confirmTkinter(text='', title='', buttons=(OK_TEXT, CANCEL_TEXT), root=None, timeout=None):
+def _confirmTkinter(
+    text="", title="", buttons=(OK_TEXT, CANCEL_TEXT), root=None, timeout=None
+):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
-    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
-    return _buttonbox(msg=text, title=title, choices=[str(b) for b in buttons], root=root, timeout=timeout)
+    assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    return _buttonbox(
+        msg=text,
+        title=title,
+        choices=[str(b) for b in buttons],
+        root=root,
+        timeout=timeout,
+    )
+
+
 confirm = _confirmTkinter
 
 
-def _promptTkinter(text='', title='' , default='', root=None, timeout=None):
+def _promptTkinter(text="", title="", default="", root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
-    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
-    return __fillablebox(text, title, default=default, mask=None,root=root, timeout=timeout)
+    assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    return __fillablebox(
+        text, title, default=default, mask=None, root=root, timeout=timeout
+    )
+
+
 prompt = _promptTkinter
 
 
-def _passwordTkinter(text='', title='', default='', mask='*', root=None, timeout=None):
+def _passwordTkinter(text="", title="", default="", mask="*", root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
-    assert TKINTER_IMPORT_SUCCEEDED, 'Tkinter is required for pymsgbox'
+    assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout)
+
+
 password = _passwordTkinter
 
 
 # Load the native versions of the alert/confirm/prompt/password functions, if available:
-if sys.platform == 'win32':
+if sys.platform == "win32":
     from . import _native_win
-    NO_ICON  = 0
-    STOP     = 0x10
+
+    NO_ICON = 0
+    STOP = 0x10
     QUESTION = 0x20
-    WARNING  = 0x30
-    INFO     = 0x40
-    alert   = _native_win.alert
+    WARNING = 0x30
+    INFO = 0x40
+    alert = _native_win.alert
     confirm = _native_win.confirm
 
 
@@ -165,7 +189,6 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
     """
     global boxRoot, __replyButtonText, __widgetTexts, buttonsFrame
 
-
     # Initialize __replyButtonText to the first choice.
     # This is what will be used if the window is closed by the close button.
     __replyButtonText = choices[0]
@@ -179,7 +202,7 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
         boxRoot.withdraw()
 
     boxRoot.title(title)
-    boxRoot.iconname('Dialog')
+    boxRoot.iconname("Dialog")
     boxRoot.geometry(rootWindowPosition)
     boxRoot.minsize(400, 100)
 
@@ -194,7 +217,7 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
     # -------------------- place the widgets in the frames -----------------------
     messageWidget = tk.Message(messageFrame, text=msg, width=400)
     messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
-    messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx='3m', pady='3m')
+    messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx="3m", pady="3m")
 
     __put_buttons_in_buttonframe(choices)
 
@@ -212,7 +235,8 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
         if __replyButtonText != TIMEOUT_RETURN_VALUE:
             __replyButtonText = None
 
-    if root: root.deiconify()
+    if root:
+        root.deiconify()
     return __replyButtonText
 
 
@@ -228,7 +252,9 @@ def __put_buttons_in_buttonframe(choices):
     for buttonText in choices:
         tempButton = tk.Button(buttonsFrame, takefocus=1, text=buttonText)
         _bindArrows(tempButton)
-        tempButton.pack(expand=tk.YES, side=tk.LEFT, padx='1m', pady='1m', ipadx='2m', ipady='1m')
+        tempButton.pack(
+            expand=tk.YES, side=tk.LEFT, padx="1m", pady="1m", ipadx="2m", ipady="1m"
+        )
 
         # remember the text associated with this widget
         __widgetTexts[tempButton] = buttonText
@@ -239,46 +265,49 @@ def __put_buttons_in_buttonframe(choices):
             i = 1
 
         # for the commandButton, bind activation events to the activation event handler
-        commandButton  = tempButton
+        commandButton = tempButton
         handler = __buttonEvent
         for selectionEvent in STANDARD_SELECTION_EVENTS:
-            commandButton.bind('<%s>' % selectionEvent, handler)
+            commandButton.bind("<%s>" % selectionEvent, handler)
 
         if CANCEL_TEXT in choices:
-            commandButton.bind('<Escape>', __cancelButtonEvent)
+            commandButton.bind("<Escape>", __cancelButtonEvent)
 
 
 def _bindArrows(widget, skipArrowKeys=False):
-    widget.bind('<Down>', _tabRight)
-    widget.bind('<Up>'  , _tabLeft)
+    widget.bind("<Down>", _tabRight)
+    widget.bind("<Up>", _tabLeft)
 
     if not skipArrowKeys:
-        widget.bind('<Right>',_tabRight)
-        widget.bind('<Left>' , _tabLeft)
+        widget.bind("<Right>", _tabRight)
+        widget.bind("<Left>", _tabLeft)
+
 
 def _tabRight(event):
-    boxRoot.event_generate('<Tab>')
+    boxRoot.event_generate("<Tab>")
+
 
 def _tabLeft(event):
-    boxRoot.event_generate('<Shift-Tab>')
+    boxRoot.event_generate("<Shift-Tab>")
 
 
 def __buttonEvent(event):
     """
     Handle an event that is generated by a person clicking a button.
     """
-    global  boxRoot, __widgetTexts, __replyButtonText
+    global boxRoot, __widgetTexts, __replyButtonText
     __replyButtonText = __widgetTexts[event.widget]
-    boxRoot.quit() # quit the main loop
+    boxRoot.quit()  # quit the main loop
+
 
 def __cancelButtonEvent(event):
     """Handle pressing Esc by clicking the Cancel button."""
-    global  boxRoot, __widgetTexts, __replyButtonText
+    global boxRoot, __widgetTexts, __replyButtonText
     __replyButtonText = CANCEL_TEXT
     boxRoot.quit()
 
 
-def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None):
+def __fillablebox(msg, title="", default="", mask=None, root=None, timeout=None):
     """
     Show a box in which a user can enter some text.
     You may optionally specify some default text, which will appear in the
@@ -290,11 +319,11 @@ def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None)
     global cancelButton, entryWidget, okButton
 
     if title == None:
-        title == ''
+        title == ""
     if default == None:
-        default = ''
+        default = ""
     __enterboxDefaultText = default
-    __enterboxText        = __enterboxDefaultText
+    __enterboxText = __enterboxDefaultText
 
     if root:
         root.withdraw()
@@ -305,9 +334,9 @@ def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None)
         boxRoot.withdraw()
 
     boxRoot.title(title)
-    boxRoot.iconname('Dialog')
+    boxRoot.iconname("Dialog")
     boxRoot.geometry(rootWindowPosition)
-    boxRoot.bind('<Escape>', __enterboxCancel)
+    boxRoot.bind("<Escape>", __enterboxCancel)
 
     # ------------- define the messageFrame ---------------------------------
     messageFrame = tk.Frame(master=boxRoot)
@@ -317,7 +346,6 @@ def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None)
     buttonsFrame = tk.Frame(master=boxRoot)
     buttonsFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
-
     # ------------- define the entryFrame ---------------------------------
     entryFrame = tk.Frame(master=boxRoot)
     entryFrame.pack(side=tk.TOP, fill=tk.BOTH)
@@ -326,10 +354,10 @@ def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None)
     buttonsFrame = tk.Frame(master=boxRoot)
     buttonsFrame.pack(side=tk.TOP, fill=tk.BOTH)
 
-    #-------------------- the msg widget ----------------------------
-    messageWidget = tk.Message(messageFrame, width='4.5i', text=msg)
+    # -------------------- the msg widget ----------------------------
+    messageWidget = tk.Message(messageFrame, width="4.5i", text=msg)
     messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
-    messageWidget.pack(side=tk.RIGHT, expand=1, fill=tk.BOTH, padx='3m', pady='3m')
+    messageWidget.pack(side=tk.RIGHT, expand=1, fill=tk.BOTH, padx="3m", pady="3m")
 
     # --------- entryWidget ----------------------------------------------
     entryWidget = tk.Entry(entryFrame, width=40)
@@ -337,47 +365,49 @@ def __fillablebox(msg, title='', default='', mask=None, root=None, timeout=None)
     entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, TEXT_ENTRY_FONT_SIZE))
     if mask:
         entryWidget.configure(show=mask)
-    entryWidget.pack(side=tk.LEFT, padx='3m')
-    entryWidget.bind('<Return>', __enterboxGetText)
-    entryWidget.bind('<Escape>', __enterboxCancel)
+    entryWidget.pack(side=tk.LEFT, padx="3m")
+    entryWidget.bind("<Return>", __enterboxGetText)
+    entryWidget.bind("<Escape>", __enterboxCancel)
 
     # put text into the entryWidget and have it pre-highlighted
-    if __enterboxDefaultText != '':
-        entryWidget.insert(0,__enterboxDefaultText)
+    if __enterboxDefaultText != "":
+        entryWidget.insert(0, __enterboxDefaultText)
         entryWidget.select_range(0, tk.END)
 
     # ------------------ ok button -------------------------------
     okButton = tk.Button(buttonsFrame, takefocus=1, text=OK_TEXT)
     _bindArrows(okButton)
-    okButton.pack(expand=1, side=tk.LEFT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
+    okButton.pack(expand=1, side=tk.LEFT, padx="3m", pady="3m", ipadx="2m", ipady="1m")
 
     # for the commandButton, bind activation events to the activation event handler
-    commandButton  = okButton
+    commandButton = okButton
     handler = __enterboxGetText
     for selectionEvent in STANDARD_SELECTION_EVENTS:
-        commandButton.bind('<%s>' % selectionEvent, handler)
-
+        commandButton.bind("<%s>" % selectionEvent, handler)
 
     # ------------------ cancel button -------------------------------
     cancelButton = tk.Button(buttonsFrame, takefocus=1, text=CANCEL_TEXT)
     _bindArrows(cancelButton)
-    cancelButton.pack(expand=1, side=tk.RIGHT, padx='3m', pady='3m', ipadx='2m', ipady='1m')
+    cancelButton.pack(
+        expand=1, side=tk.RIGHT, padx="3m", pady="3m", ipadx="2m", ipady="1m"
+    )
 
     # for the commandButton, bind activation events to the activation event handler
-    commandButton  = cancelButton
+    commandButton = cancelButton
     handler = __enterboxCancel
     for selectionEvent in STANDARD_SELECTION_EVENTS:
-        commandButton.bind('<%s>' % selectionEvent, handler)
+        commandButton.bind("<%s>" % selectionEvent, handler)
 
     # ------------------- time for action! -----------------
-    entryWidget.focus_force()    # put the focus on the entryWidget
+    entryWidget.focus_force()  # put the focus on the entryWidget
     boxRoot.deiconify()
     if timeout is not None:
         boxRoot.after(timeout, timeoutBoxRoot)
     boxRoot.mainloop()  # run it!
 
     # -------- after the run has completed ----------------------------------
-    if root: root.deiconify()
+    if root:
+        root.deiconify()
     try:
         boxRoot.destroy()  # button_click didn't destroy boxRoot, so we do it now
     except tk.TclError:
@@ -397,7 +427,7 @@ def __enterboxGetText(event):
 def __enterboxRestore(event):
     global entryWidget
 
-    entryWidget.delete(0,len(entryWidget.get()))
+    entryWidget.delete(0, len(entryWidget.get()))
     entryWidget.insert(0, __enterboxDefaultText)
 
 
@@ -406,6 +436,3 @@ def __enterboxCancel(event):
 
     __enterboxText = None
     boxRoot.quit()
-
-
-
