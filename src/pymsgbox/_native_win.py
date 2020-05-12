@@ -60,6 +60,7 @@ def alert(
     _tkinter=False,
 ):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
+    text = str(text)
     if (_tkinter) or (timeout is not None) or (button != pymsgbox.OK_TEXT):
         # Timeouts are not supported by Windows message boxes.
         # Call the original tkinter alert function, not this native one:
@@ -79,6 +80,7 @@ def confirm(
     _tkinter=False,
 ):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
+    text = str(text)
     buttonFlag = None
     if len(buttons) == 1:
         if buttons[0] == pymsgbox.OK_TEXT:

@@ -1,7 +1,7 @@
 # PyMsgBox - A simple, cross-platform, pure Python module for JavaScript-like message boxes.
 # By Al Sweigart al@inventwithpython.com
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 # Modified BSD License
 # Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
@@ -108,6 +108,7 @@ buttonsFrame = None
 def _alertTkinter(text="", title="", button=OK_TEXT, root=None, timeout=None):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    text = str(text)
     retVal = _buttonbox(
         msg=text, title=title, choices=[str(button)], root=root, timeout=timeout
     )
@@ -125,6 +126,7 @@ def _confirmTkinter(
 ):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    text = str(text)
     return _buttonbox(
         msg=text,
         title=title,
@@ -140,6 +142,7 @@ confirm = _confirmTkinter
 def _promptTkinter(text="", title="", default="", root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    text = str(text)
     return __fillablebox(
         text, title, default=default, mask=None, root=root, timeout=timeout
     )
@@ -151,6 +154,7 @@ prompt = _promptTkinter
 def _passwordTkinter(text="", title="", default="", mask="*", root=None, timeout=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
+    text = str(text)
     return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout)
 
 
