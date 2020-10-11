@@ -5,7 +5,6 @@ import time
 import threading
 import inspect
 
-sys.path.insert(0, os.path.abspath('..'))
 import pymsgbox
 
 # Note: Yes, PyAutoGUI does have PyMsgBox itself as a dependency, but we won't be using that part of PyAutoGUI for this testing.
@@ -13,7 +12,7 @@ import pyautogui # PyAutoGUI simulates key presses on the message boxes.
 pyautogui.PAUSE = 0.1
 
 
-GUI_WAIT = 0.2 # if tests start failing, maybe try bumping this up a bit (though that'll slow the tests down)
+GUI_WAIT = 0.4 # if tests start failing, maybe try bumping this up a bit (though that'll slow the tests down)
 
 
 """

@@ -1,7 +1,7 @@
 # PyMsgBox - A simple, cross-platform, pure Python module for JavaScript-like message boxes.
 # By Al Sweigart al@inventwithpython.com
 
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 
 # Modified BSD License
 # Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
