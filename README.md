@@ -30,3 +30,8 @@ On Linux Python 2, you need to first install Tkinter by running: sudo apt-get in
 Modified BSD License
 
 Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
+
+Support
+-------
+
+If you find this project helpful and would like to support its development, [consider donating to its creator on Patreon](https://www.patreon.com/AlSweigart).
