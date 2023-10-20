@@ -105,12 +105,12 @@ boxRoot = None
 buttonsFrame = None
 
 
-def _alertTkinter(text="", title="", button=OK_TEXT, root=None, timeout=None):
+def _alertTkinter(text="", title="", button=OK_TEXT, root=None, timeout=None, icon=None):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     text = str(text)
     retVal = _buttonbox(
-        msg=text, title=title, choices=[str(button)], root=root, timeout=timeout
+        msg=text, title=title, choices=[str(button)], root=root, timeout=timeout, icon=icon
     )
     if retVal is None:
         return button
@@ -122,7 +122,7 @@ alert = _alertTkinter
 
 
 def _confirmTkinter(
-    text="", title="", buttons=(OK_TEXT, CANCEL_TEXT), root=None, timeout=None
+    text="", title="", buttons=(OK_TEXT, CANCEL_TEXT), root=None, timeout=None, icon=None
 ):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
@@ -133,29 +133,30 @@ def _confirmTkinter(
         choices=[str(b) for b in buttons],
         root=root,
         timeout=timeout,
+        icon=icon
     )
 
 
 confirm = _confirmTkinter
 
 
-def _promptTkinter(text="", title="", default="", root=None, timeout=None):
+def _promptTkinter(text="", title="", default="", root=None, timeout=None, icon=None):
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     text = str(text)
     return __fillablebox(
-        text, title, default=default, mask=None, root=root, timeout=timeout
+        text, title, default=default, mask=None, root=root, timeout=timeout, icon=icon
     )
 
 
 prompt = _promptTkinter
 
 
-def _passwordTkinter(text="", title="", default="", mask="*", root=None, timeout=None):
+def _passwordTkinter(text="", title="", default="", mask="*", root=None, timeout=None, icon=None):
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     text = str(text)
-    return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout)
+    return __fillablebox(text, title, default, mask=mask, root=root, timeout=timeout, icon=icon)
 
 
 password = _passwordTkinter
@@ -181,7 +182,22 @@ def timeoutBoxRoot():
     __enterboxText = TIMEOUT_RETURN_VALUE
 
 
-def _buttonbox(msg, title, choices, root=None, timeout=None):
+def _seticon(window: tk.Tk, icon: str):
+    try:
+        img = tk.PhotoImage(file=icon)
+        window.iconphoto(True, img)
+        return
+    except tk.TclError:
+        pass
+
+    try:
+        window.iconbitmap(icon)
+        return
+    except tk.TclError:
+        pass
+
+
+def _buttonbox(msg, title, choices, root=None, timeout=None, icon=None):
     """
     Display a msg, a title, and a set of buttons.
     The buttons are defined by the members of the choices list.
@@ -190,6 +206,7 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
     @arg msg: the msg to be displayed.
     @arg title: the window title
     @arg choices: a list or tuple of the choices to be displayed
+    @arg icon: the window icon (tk bitmap name, png, gif, ico or xbm file)
     """
     global boxRoot, __replyButtonText, __widgetTexts, buttonsFrame
 
@@ -204,6 +221,9 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
     else:
         boxRoot = tk.Tk()
         boxRoot.withdraw()
+
+    if icon:
+        _seticon(boxRoot, icon)
 
     boxRoot.title(title)
     boxRoot.iconname("Dialog")
@@ -311,7 +331,7 @@ def __cancelButtonEvent(event):
     boxRoot.quit()
 
 
-def __fillablebox(msg, title="", default="", mask=None, root=None, timeout=None):
+def __fillablebox(msg, title="", default="", mask=None, root=None, timeout=None, icon=None):
     """
     Show a box in which a user can enter some text.
     You may optionally specify some default text, which will appear in the
@@ -336,6 +356,9 @@ def __fillablebox(msg, title="", default="", mask=None, root=None, timeout=None)
     else:
         boxRoot = tk.Tk()
         boxRoot.withdraw()
+
+    if icon:
+        _seticon(boxRoot, icon)
 
     boxRoot.title(title)
     boxRoot.iconname("Dialog")
