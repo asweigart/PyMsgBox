@@ -50,13 +50,24 @@ else:  # Python 3 functions.
     messageBoxFunc = ctypes.windll.user32.MessageBoxW
 
 
+def _getsysicon(icon):
+    icons = {
+        'stop': STOP,
+        'question': QUESTION,
+        'warning': WARNING,
+        'info': INFO
+    }
+
+    return icons.get(icon, NO_ICON)
+
+
 def alert(
     text="",
     title="",
     button=pymsgbox.OK_TEXT,
     root=None,
     timeout=None,
-    icon=NO_ICON,
+    icon=None,
     _tkinter=False,
 ):
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
@@ -64,8 +75,9 @@ def alert(
     if (_tkinter) or (timeout is not None) or (button != pymsgbox.OK_TEXT):
         # Timeouts are not supported by Windows message boxes.
         # Call the original tkinter alert function, not this native one:
-        return pymsgbox._alertTkinter(text, title, button, root, timeout)
+        return pymsgbox._alertTkinter(text, title, button, root, timeout, icon)
 
+    icon = _getsysicon(icon)
     messageBoxFunc(0, text, title, MB_OK | MB_SETFOREGROUND | MB_TOPMOST | icon)
     return button
 
@@ -76,7 +88,7 @@ def confirm(
     buttons=(pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT),
     root=None,
     timeout=None,
-    icon=QUESTION,
+    icon='question',
     _tkinter=False,
 ):
     """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
@@ -114,8 +126,9 @@ def confirm(
 
     if (_tkinter) or (timeout is not None) or (buttonFlag is None):
         # Call the original tkinter confirm() function, not this native one:
-        return pymsgbox._confirmTkinter(text, title, buttons, root, timeout)
+        return pymsgbox._confirmTkinter(text, title, buttons, root, timeout, icon)
 
+    icon = _getsysicon(icon)
     retVal = messageBoxFunc(
         0, text, title, buttonFlag | MB_SETFOREGROUND | MB_TOPMOST | icon
     )
